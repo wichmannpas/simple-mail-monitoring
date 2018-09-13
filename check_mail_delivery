@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+import logging
+from datetime import datetime
+from email import message_from_string
+from email.mime.text import MIMEText
+from email.utils import mktime_tz, parsedate_tz
+from imaplib import IMAP4_SSL
+from random import SystemRandom
+from smtplib import SMTP
+from string import ascii_letters, digits
+from time import sleep
+from typing import Optional
+
+from config import *
+
+
+random = SystemRandom()
+
+
+def check_delivery():
+    subject = ''.join(random.choice(ascii_letters + digits) for i in range(30))
+
+    send_test_message(subject)
+
+    retry = 0
+    while True:
+        sleep(2)
+
+        logging.info('trying to fetch test mail, retry {}'.format(retry))
+        date = get_email_date(subject)
+        if date:
+            break
+        retry += 1
+        if retry > MAX_RETRIES:
+            logging.error('failed to fetch test mail')
+            return
+
+    if date:
+        with open(STATUS_FILE, 'w') as fh:
+            fh.write(str(date.timestamp()))
+
+
+def get_email_date(subject: str) -> Optional[datetime]:
+    """
+    Get the date of the email with specified subject and delete it.
+
+    Warning: no escpaing of subject is performed.
+    """
+    most_recent_date = None
+
+    with IMAP4_SSL(HOST) as conn:
+        conn.login(USER, PASSWORD)
+        conn.select(MAILBOX)
+
+        logging.info('connected to mailbox')
+
+        state, matches = conn.search(None, '(SUBJECT "{}")'.format(subject))
+        if state != 'OK':
+            logging.error('failure listing messages')
+            return
+        matches = [match for match in matches[0].split(b' ') if match]
+        logging.info('found {} matching message(s)'.format(len(matches)))
+        for match in matches:
+            state, msg = conn.fetch(match, '(RFC822)')
+            if state != 'OK':
+                logging.error('failure fetching message')
+                return
+            msg = message_from_string(msg[0][1].decode())
+            msg_date = datetime.fromtimestamp(
+                mktime_tz(parsedate_tz(msg['Date'])))
+            logging.info('fetched message {}, date {}'.format(int(match), msg_date))
+
+            if most_recent_date is None or msg_date > most_recent_date:
+                most_recent_date = msg_date
+
+            conn.store(match, '+FLAGS', '\\Deleted')
+
+        logging.info('expunging mailbox')
+        conn.expunge()
+
+    return most_recent_date
+
+
+def send_test_message(subject: str):
+    mail = MIMEText(
+        'This is a test email. Its sole purpose is to act as a test email\n'
+        'whose existence will confirm that email delivery is working\n'
+        'as it should.')
+    mail['Subject'] = subject
+    mail['From'] = TEST_MAIL_SENDER
+    mail['To'] = TEST_MAIL_RECIENT
+    with SMTP('localhost') as smtp:
+        smtp.sendmail(TEST_MAIL_SENDER, TEST_MAIL_RECIENT, mail.as_string())
+    logging.info('sent test email with subject {}'.format(subject))
+
+if __name__ == '__main__':
+    logging.basicConfig(
+        format='%(asctime)-15s: %(message)s', level=logging.INFO)
+
+    while True:
+        check_delivery()
+        sleep(CHECK_PERIOD)

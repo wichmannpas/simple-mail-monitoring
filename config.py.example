@@ -1,0 +1,9 @@
+HOST = 'mailhost.example.org'
+USER = 'monitoringtest@example.org'
+PASSWORD = 'super secret password'
+MAILBOX = 'INBOX'
+TEST_MAIL_SENDER = 'sender@monitoring-example-org.net'
+TEST_MAIL_RECIENT = USER
+CHECK_PERIOD = 900
+MAX_RETRIES = 30
+STATUS_FILE = '/var/www/mailhost.example.org-lastdelivery'
