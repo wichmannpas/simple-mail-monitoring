@@ -1,9 +1,26 @@
-HOST = 'mailhost.example.org'
-USER = 'monitoringtest@example.org'
-PASSWORD = 'super secret password'
-MAILBOX = 'INBOX'
-TEST_MAIL_SENDER = 'sender@monitoring-example-org.net'
-TEST_MAIL_RECIENT = USER
-CHECK_PERIOD = 900
+import logging
+
+# smtp smarthost to use for relay; this should not be the same host as the receiving server!
+SMTP = {
+    'host': 'localhost',
+    'port': 25,
+    #'user': 'user@example',
+    #'password': 'foobar123',
+}
+
+IMAP = {
+    'host': 'monitored-mailhost.example',
+    'user': 'monitoringtest@example.org',
+    'password': 'foobar123',
+    'mailbox': 'INBOX',
+}
+
+TEST_MAIL = {
+    'sender': 'monitoring-host@monitoring.example.org',
+    'recipient': IMAP['user'],
+    'subject': 'Test-Email {}',
+}
+
 MAX_RETRIES = 30
-STATUS_FILE = '/var/www/mailhost.example.org-lastdelivery'
+LOG_LEVEL = logging.INFO
+TEXTFILE_PATH = '/opt/prometheus/textfiles/mail_delivery.prom'
