@@ -51,6 +51,8 @@ def check_delivery(metrics: dict):
     receive_time_seconds = (after_receive - after_send).total_seconds()
     metrics['receive_time_seconds'] = receive_time_seconds
 
+    metrics['mail_timestamp'] = date.timestamp()
+
     metrics['success'] = True
 
 
@@ -140,6 +142,13 @@ def write_textfile(metrics: dict):
                 'from the IMAP mailbox\n')
             textfile.write('# TYPE probe_receive_time_seconds gauge\n')
             textfile.write('probe_receive_time_seconds {}\n'.format(receive_duration))
+
+        mail_timestamp = metrics.pop('mail_timestamp', None)
+        if mail_timestamp is not None:
+            textfile.write(
+                '# HELP probe_mail_timestamp The timestamp of the email\n')
+            textfile.write('# TYPE probe_mail_timestamp gauge\n')
+            textfile.write('probe_mail_timestamp {}\n'.format(mail_timestamp))
 
         success = metrics.pop('success', None)
         if success is not None:
