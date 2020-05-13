@@ -6,6 +6,7 @@ SMTP = {
     'port': 25,
     #'user': 'user@example',
     #'password': 'foobar123',
+    #'tls': False,
 }
 
 IMAP = {

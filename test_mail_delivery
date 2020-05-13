@@ -109,6 +109,9 @@ def send_test_message(subject: str):
     with SMTP(config.SMTP['host'], config.SMTP['port']) as smtp:
         smtp_user = config.SMTP.get('user')
         smtp_password = config.SMTP.get('password')
+        smtp_tls = config.SMTP.get('tls')
+        if smtp_tls:
+            smtp.starttls()
         if smtp_user and smtp_password:
             smtp.login(smtp_user, smtp_password)
 
