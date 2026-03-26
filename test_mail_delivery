@@ -129,38 +129,38 @@ def write_textfile(metrics: dict):
         total_duration = metrics.pop('total_duration', None)
         if total_duration is not None:
             textfile.write(
-                '# HELP probe_duration_seconds The total duration of the probe\n')
-            textfile.write('# TYPE probe_duration_seconds gauge\n')
-            textfile.write('probe_duration_seconds {}\n'.format(total_duration))
+                '# HELP mail_delivery_duration_seconds The total duration of the mail delivery probe\n')
+            textfile.write('# TYPE mail_delivery_duration_seconds gauge\n')
+            textfile.write('mail_delivery_duration_seconds {}\n'.format(total_duration))
 
         send_duration = metrics.pop('send_time_seconds', None)
         if send_duration is not None:
             textfile.write(
-                '# HELP probe_send_time_seconds The duration of sending the email\n')
-            textfile.write('# TYPE probe_send_time_seconds gauge\n')
-            textfile.write('probe_send_time_seconds {}\n'.format(send_duration))
+                '# HELP mail_delivery_send_time_seconds The duration of sending the email\n')
+            textfile.write('# TYPE mail_delivery_send_time_seconds gauge\n')
+            textfile.write('mail_delivery_send_time_seconds {}\n'.format(send_duration))
 
         receive_duration = metrics.pop('receive_time_seconds', None)
         if receive_duration is not None:
             textfile.write(
-                '# HELP probe_receive_time_seconds The duration of receiving the email '
+                '# HELP mail_delivery_receive_time_seconds The duration of receiving the email '
                 'from the IMAP mailbox\n')
-            textfile.write('# TYPE probe_receive_time_seconds gauge\n')
-            textfile.write('probe_receive_time_seconds {}\n'.format(receive_duration))
+            textfile.write('# TYPE mail_delivery_receive_time_seconds gauge\n')
+            textfile.write('mail_delivery_receive_time_seconds {}\n'.format(receive_duration))
 
         mail_timestamp = metrics.pop('mail_timestamp', None)
         if mail_timestamp is not None:
             textfile.write(
-                '# HELP probe_mail_timestamp The timestamp of the email\n')
-            textfile.write('# TYPE probe_mail_timestamp gauge\n')
-            textfile.write('probe_mail_timestamp {}\n'.format(mail_timestamp))
+                '# HELP mail_delivery_timestamp The timestamp of the email\n')
+            textfile.write('# TYPE mail_delivery_timestamp gauge\n')
+            textfile.write('mail_delivery_timestamp {}\n'.format(mail_timestamp))
 
         success = metrics.pop('success', None)
         if success is not None:
             textfile.write(
-                '# HELP probe_success Whether the mail delivery was successful\n')
-            textfile.write('# TYPE probe_success gauge\n')
-            textfile.write('probe_success {}\n'.format(int(success)))
+                '# HELP mail_delivery_success Whether the mail delivery was successful\n')
+            textfile.write('# TYPE mail_delivery_success gauge\n')
+            textfile.write('mail_delivery_success {}\n'.format(int(success)))
 
         textfile.flush()
         os.fsync(textfile.fileno())
