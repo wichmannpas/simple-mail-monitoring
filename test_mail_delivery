@@ -6,7 +6,7 @@ from datetime import datetime
 from email import message_from_string
 from email.mime.text import MIMEText
 from email.utils import format_datetime, mktime_tz, parsedate_tz
-from imaplib import IMAP4_SSL
+from imaplib import IMAP4
 from random import SystemRandom
 from smtplib import SMTP
 from string import ascii_letters, digits
@@ -64,7 +64,9 @@ def get_email_date(subject: str) -> Optional[datetime]:
     """
     most_recent_date = None
 
-    with IMAP4_SSL(config.IMAP['host']) as conn:
+    with IMAP4(config.IMAP['host']) as conn:
+        if config.IMAP.get('tls'):
+            conn.starttls()
         conn.login(config.IMAP['user'], config.IMAP['password'])
         conn.select(config.IMAP['mailbox'])
 

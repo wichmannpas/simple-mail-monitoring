@@ -14,6 +14,7 @@ IMAP = {
     'user': 'monitoringtest@example.org',
     'password': 'foobar123',
     'mailbox': 'INBOX',
+    'tls': True,
 }
 
 TEST_MAIL = {
