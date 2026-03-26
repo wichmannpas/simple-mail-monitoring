@@ -24,4 +24,8 @@ TEST_MAIL = {
 
 MAX_RETRIES = 30
 LOG_LEVEL = logging.INFO
-TEXTFILE_PATH = '/opt/prometheus/textfiles/mail_delivery.prom'
+TEXTFILE_PATH = '/var/lib/prometheus/node-exporter/email_delivery.prom'
+# Must be a directory on the same filesystem as the textfile and the user running the script must have
+# permissions to create temprorary files in that directory.
+# This is used to create the textfile and then atomically move it to its desired destination.
+TEXTFILE_TMP_PATH = '/var/lib/prometheus/node-exporter/.tmp-email_delivery'

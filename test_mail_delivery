@@ -123,7 +123,7 @@ def send_test_message(subject: str):
 
 
 def write_textfile(metrics: dict):
-    with NamedTemporaryFile(mode='w', delete=False) as textfile:
+    with NamedTemporaryFile(mode='w', delete=False, dir=config.TEXTFILE_TMP_PATH) as textfile:
         total_duration = metrics.pop('total_duration', None)
         if total_duration is not None:
             textfile.write(
